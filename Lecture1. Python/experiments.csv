@@ -1,0 +1,5 @@
+experiment_id,model_name,accuracy,training_time
+exp_001,Модель A,0.85,120.5
+exp_002,Модель B,0.82,95.3
+exp_003,Модель C,0.89,180.7
+exp_004,Модель A,0.87,115.2
