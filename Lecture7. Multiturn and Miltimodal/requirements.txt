@@ -1,0 +1,27 @@
+# Data processing and analysis
+pandas
+numpy
+openpyxl
+
+# HTTP requests
+requests
+
+# Evaluation frameworks
+deepeval
+ragas
+opik
+eval-ai-library
+
+
+# Required for RAGAS
+datasets
+langchain
+langchain-openai
+sentence-transformers
+
+# Required if using openai
+openai
+
+
+# For async operations (if needed)
+asyncio

@@ -1,0 +1,25 @@
+# Мультимодальная оценка изображений
+# Multimodal Image Evaluation
+
+# PyTorch (CPU-only версия для экономии места)
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Метрики изображений
+torchmetrics>=1.0.0
+lpips>=0.1.4
+
+# Transformers для CLIP
+transformers>=4.30.0
+
+# DeepEval для мультимодальных метрик
+deepeval>=0.21.0
+
+# Работа с изображениями
+Pillow>=9.0.0
+
+# Окружение
+python-dotenv>=1.0.0
+
+# OpenAI клиент (для DeepEval прокси)
+openai>=1.0.0
