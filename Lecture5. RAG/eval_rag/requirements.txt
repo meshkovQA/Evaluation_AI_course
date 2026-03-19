@@ -7,7 +7,7 @@ openpyxl
 requests
 
 # Evaluation frameworks
-deepeval
+deepeval==3.2.1                       
 ragas
 opik
 eval-ai-library

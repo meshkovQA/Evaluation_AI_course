@@ -33,7 +33,8 @@ def create_metrics(
             metric = METRICS[metric_name](
                 threshold=threshold,
                 model=model,
-                include_reason=True
+                include_reason=True,
+                async_mode=False
             )
             metrics.append(metric)
 
@@ -65,25 +66,25 @@ if __name__ == "__main__":
     evaluate(test_cases=[test_case], metrics=metrics)
 
     # ============= ПРИМЕР 2: С ПРОКСИ =============
-    print("\n" + "="*60)
-    print("📊 Пример 2: Кастомная прокси модель")
+    # print("\n" + "="*60)
+    # print("📊 Пример 2: Кастомная прокси модель")
 
-    # Создаем прокси модель
-    proxy_model = create_proxy_model(
-        model="gpt-4o-mini",
-        api_key="sk-proxy-your-key",
-        base_url="http://5.11.83.110:8000"
-    )
+    # # Создаем прокси модель
+    # proxy_model = create_proxy_model(
+    #     model="gpt-4o-mini",
+    #     api_key="sk-proxy-your-key",
+    #     base_url="http://5.11.83.110:8000"
+    # )
 
-    # Создаем метрики с прокси моделью
-    metrics = create_metrics(
-        model=proxy_model,  # ← Кастомная прокси модель
-        metrics_list=['answer_relevancy', 'faithfulness'],
-        threshold=0.7
-    )
+    # # Создаем метрики с прокси моделью
+    # metrics = create_metrics(
+    #     model=proxy_model,  # ← Кастомная прокси модель
+    #     metrics_list=['answer_relevancy', 'faithfulness'],
+    #     threshold=0.7
+    # )
 
-    # Оцениваем
-    evaluate(test_cases=[test_case], metrics=metrics)
+    # # Оцениваем
+    # evaluate(test_cases=[test_case], metrics=metrics)
 
     # ============= ПРИМЕР 3: Без wrapper функции =============
     print("\n" + "="*60)
@@ -91,9 +92,10 @@ if __name__ == "__main__":
 
     # Прямо создаем метрику
     metric = AnswerRelevancyMetric(
-        model=proxy_model,  # Можно proxy_model или "gpt-4o-mini"
+        model="gpt-4o-mini",  # Можно proxy_model или "gpt-4o-mini"
         threshold=0.7,
-        include_reason=True
+        include_reason=True,
+        async_mode=False
     )
 
     # Измеряем
