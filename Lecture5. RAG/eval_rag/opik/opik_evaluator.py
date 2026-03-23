@@ -42,7 +42,10 @@ def create_metrics(
     metrics = []
     for metric_name in metrics_list:
         if metric_name in METRICS:
-            metric = METRICS[metric_name](name=metric_name)
+            kwargs = {"name": metric_name}
+            if model is not None:
+                kwargs["model"] = model
+            metric = METRICS[metric_name](**kwargs)
             metrics.append(metric)
 
     return metrics
@@ -61,40 +64,40 @@ def simple_rag_task(item: Dict) -> Dict:
     }
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # Настройка Opik
-    opik.configure(use_local=False)  # Или use_local=True для локального
-    client = Opik()
+#     # Настройка Opik
+#     opik.configure(use_local=False)  # Или use_local=True для локального
+#     client = Opik()
 
-    # Тестовые данные
-    test_input = "What if these shoes don't fit?"
-    test_output = "We offer a 30-day full refund at no extra cost."
-    test_context = [
-        "All customers are eligible for a 30 day full refund at no extra cost."]
+#     # Тестовые данные
+#     test_input = "What if these shoes don't fit?"
+#     test_output = "We offer a 30-day full refund at no extra cost."
+#     test_context = [
+#         "All customers are eligible for a 30 day full refund at no extra cost."]
 
-    # Тестовые примеры
-    test_cases = [
-        {
-            "input": "What if these shoes don't fit?",
-            "output": "We offer a 30-day full refund at no extra cost.",
-            "expected_output": "You are eligible for a 30 day full refund at no extra cost.",
-            "context": ["All customers are eligible for a 30 day full refund at no extra cost."]
-        },
-        {
-            "input": "What is your return policy?",
-            "output": "You can return within 30 days for a full refund.",
-            "expected_output": "We have a 30-day return policy with full refund.",
-            "context": ["Our return policy allows 30 days for returns with full refund."]
-        }
-    ]
+#     # Тестовые примеры
+#     test_cases = [
+#         {
+#             "input": "What if these shoes don't fit?",
+#             "output": "We offer a 30-day full refund at no extra cost.",
+#             "expected_output": "You are eligible for a 30 day full refund at no extra cost.",
+#             "context": ["All customers are eligible for a 30 day full refund at no extra cost."]
+#         },
+#         {
+#             "input": "What is your return policy?",
+#             "output": "You can return within 30 days for a full refund.",
+#             "expected_output": "We have a 30-day return policy with full refund.",
+#             "context": ["Our return policy allows 30 days for returns with full refund."]
+#         }
+#     ]
 
-    # Создаем прокси модель
-    proxy_model = create_opik_proxy_model(
-        model="gpt-4o-mini",
-        api_key="sk-proxy-your-key",
-        base_url="http://5.11.83.110:8000"
-    )
+#     # Создаем прокси модель
+#     proxy_model = create_opik_proxy_model(
+#         model="gpt-4o-mini",
+#         api_key="sk-proxy-your-key",
+#         base_url="http://5.11.83.110:8000"
+#     )
 
     # # ============= ПРИМЕР 1: Прямое использование метрик =============
     # print("📊 Пример 1: Прямое использование метрик")
@@ -177,11 +180,11 @@ if __name__ == "__main__":
     #     print(f"   Reason: {score.reason}")
 
     # ============= ПРИМЕР 4: С Datasets и Experiments (с прокси) =============
-    print("\n" + "="*60)
-    print("📊 Пример 4: Эксперимент с датасетом и прокси")
+    # print("\n" + "="*60)
+    # print("📊 Пример 4: Эксперимент с датасетом и прокси")
 
-    # Получаем существующий датасет
-    dataset = client.get_dataset(name="simple_test_dataset_v2")
+    # # Получаем существующий датасет
+    # dataset = client.get_dataset(name="simple_test_dataset_v2")
 
     # Имя датасета
     # import time
@@ -195,17 +198,17 @@ if __name__ == "__main__":
     # dataset.insert(test_cases)
     # print(f"✅ Создан датасет '{dataset_name}' с {len(test_cases)} примерами")
 
-    # Создаем метрики с прокси для эксперимента
-    experiment_metrics = create_metrics(
-        model=proxy_model,  # ← Используем прокси модель
-        metrics_list=['answer_relevance', 'hallucination', 'context_precision']
-    )
+    # # Создаем метрики с прокси для эксперимента
+    # experiment_metrics = create_metrics(
+    #     model=proxy_model,  # ← Используем прокси модель
+    #     metrics_list=['answer_relevance', 'hallucination', 'context_precision']
+    # )
 
-    # Запускаем эксперимент
-    print("\n🧪 Запуск эксперимента с прокси...")
-    result = evaluate(
-        dataset=dataset,
-        task=simple_rag_task,
-        scoring_metrics=experiment_metrics,
-        experiment_name="Proxy_RAG_Test_v4"
-    )
+    # # Запускаем эксперимент
+    # print("\n🧪 Запуск эксперимента с прокси...")
+    # result = evaluate(
+    #     dataset=dataset,
+    #     task=simple_rag_task,
+    #     scoring_metrics=experiment_metrics,
+    #     experiment_name="Proxy_RAG_Test_v4"
+    # )

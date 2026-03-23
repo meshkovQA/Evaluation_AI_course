@@ -151,12 +151,12 @@ if __name__ == "__main__":
     # 1. Инициализируем RAG коннектор
     rag_connector = RAGConnector(
         endpoint_url="http://5.11.83.110:8002/api/v1/chat/",
-        api_key="rag-api-key",
+        api_key="rag-your-key",
         timeout=30
     )
 
     # 2. Указываем путь к Excel файлу
-    excel_path = "data/evaluation_dataset.xlsx"
+    excel_path = "eval_rag/data/evaluation_dataset.xlsx"
 
     # 3. Конфигурация метрик RAGAS
     metrics_config = {

@@ -159,78 +159,78 @@ class RagasEvaluator:
         return pd.DataFrame(results)
 
 
-# ==================== ПРИМЕР ====================
+# # ==================== ПРИМЕР ====================
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # Просто список словарей!
-    test_cases = [
-        {
-            'question': "What is the capital of France?",
-            'answer': "Paris is the capital of France.",
-            'contexts': ["Paris is the capital and largest city of France."],
-            'ground_truth': "Paris"
-        },
+#     # Просто список словарей!
+#     test_cases = [
+#         {
+#             'question': "What is the capital of France?",
+#             'answer': "Paris is the capital of France.",
+#             'contexts': ["Paris is the capital and largest city of France."],
+#             'ground_truth': "Paris"
+#         },
 
-        # Пример 2: Хороший ответ с дополнительной информацией
-        {
-            'question': "Who invented the telephone?",
-            'answer': "Alexander Graham Bell invented the telephone in 1876.",
-            'contexts': [
-                "Alexander Graham Bell was a Scottish-born inventor who is credited with inventing the telephone.",
-                "The first successful telephone call was made on March 10, 1876."
-            ],
-            'ground_truth': "Alexander Graham Bell"
-        }
-    ]
+#         # Пример 2: Хороший ответ с дополнительной информацией
+#         {
+#             'question': "Who invented the telephone?",
+#             'answer': "Alexander Graham Bell invented the telephone in 1876.",
+#             'contexts': [
+#                 "Alexander Graham Bell was a Scottish-born inventor who is credited with inventing the telephone.",
+#                 "The first successful telephone call was made on March 10, 1876."
+#             ],
+#             'ground_truth': "Alexander Graham Bell"
+#         }
+#     ]
 
-    # Пример 1: С обычной OpenAI
-    print("="*60)
-    print("📊 Пример 1: Обычная OpenAI")
+#     # Пример 1: С обычной OpenAI
+#     print("="*60)
+#     print("📊 Пример 1: Обычная OpenAI")
 
-    evaluator = RagasEvaluator(model="gpt-4o-mini", use_proxy=False)
+#     evaluator = RagasEvaluator(model="gpt-4o-mini", use_proxy=False)
 
-    evaluator.configure_metrics({
-        'faithfulness': {'enabled': True, 'threshold': 0.7},
-        'response_relevancy': {'enabled': True, 'threshold': 0.7}
-    })
+#     evaluator.configure_metrics({
+#         'faithfulness': {'enabled': True, 'threshold': 0.7},
+#         'response_relevancy': {'enabled': True, 'threshold': 0.7}
+#     })
 
-    df = evaluator.evaluate_batch(test_cases)
-    print("\n✅ Результаты:")
-    print(df)
+#     df = evaluator.evaluate_batch(test_cases)
+#     print("\n✅ Результаты:")
+#     print(df)
 
-    # Пример 2: С прокси
-    print("\n" + "="*60)
-    print("📊 Пример 2: Через прокси")
+#     # Пример 2: С прокси
+#     print("\n" + "="*60)
+#     print("📊 Пример 2: Через прокси")
 
-    evaluator_proxy = RagasEvaluator(
-        model="gpt-4o-mini",
-        use_proxy=True,
-        proxy_api_key="sk-proxy-your-key",
-        proxy_base_url="http://5.11.83.110:8000"
-    )
+#     evaluator_proxy = RagasEvaluator(
+#         model="gpt-4o-mini",
+#         use_proxy=True,
+#         proxy_api_key="sk-proxy-your-key",
+#         proxy_base_url="http://5.11.83.110:8000"
+#     )
 
-    evaluator_proxy.configure_metrics({
-        'faithfulness': {'enabled': True},
-        'response_relevancy': {'enabled': True, 'threshold': 0.7}
-    })
+#     evaluator_proxy.configure_metrics({
+#         'faithfulness': {'enabled': True},
+#         'response_relevancy': {'enabled': True, 'threshold': 0.7}
+#     })
 
-    df = evaluator_proxy.evaluate_batch(test_cases)
-    print("\n✅ Результаты:")
-    print(df)
+#     df = evaluator_proxy.evaluate_batch(test_cases)
+#     print("\n✅ Результаты:")
+#     print(df)
 
-    # Пример 3: Оценка одного случая напрямую
-    print("\n" + "="*60)
-    print("📊 Пример 3: Один случай")
+#     # Пример 3: Оценка одного случая напрямую
+#     print("\n" + "="*60)
+#     print("📊 Пример 3: Один случай")
 
-    async def test_single():
-        scores = await evaluator.evaluate_single(
-            question="What is RAG?",
-            answer="RAG stands for Retrieval-Augmented Generation.",
-            contexts=[
-                "RAG is a technique that combines retrieval and generation."],
-            ground_truth="RAG is Retrieval-Augmented Generation"
-        )
-        print(f"\n✅ Оценки: {scores}")
+#     async def test_single():
+#         scores = await evaluator.evaluate_single(
+#             question="What is RAG?",
+#             answer="RAG stands for Retrieval-Augmented Generation.",
+#             contexts=[
+#                 "RAG is a technique that combines retrieval and generation."],
+#             ground_truth="RAG is Retrieval-Augmented Generation"
+#         )
+#         print(f"\n✅ Оценки: {scores}")
 
-    asyncio.run(test_single())
+#     asyncio.run(test_single())

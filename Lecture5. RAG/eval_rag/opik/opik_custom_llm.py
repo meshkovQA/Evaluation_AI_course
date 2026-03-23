@@ -4,14 +4,16 @@
 """
 
 import os
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Type
+import pydantic
 from openai import OpenAI
+from opik.evaluation.models.base_model import OpikBaseModel
 
 
-class OpikProxyLLM:
+class OpikProxyLLM(OpikBaseModel):
     """
-    Кастомная модель для Opik, которая работает через прокси сервер
-    Совместима с интерфейсом Opik metrics
+    Кастомная модель для Opik, которая работает через прокси сервер.
+    Наследует OpikBaseModel — совместима с метриками Opik.
     """
 
     def __init__(
@@ -30,7 +32,7 @@ class OpikProxyLLM:
             base_url: URL прокси сервера (по умолчанию из переменной окружения)
             temperature: Температура генерации
         """
-        self.model_name = model
+        super().__init__(model_name=model)
         self.temperature = temperature
 
         # Получаем настройки из переменных окружения или используем переданные
@@ -49,31 +51,32 @@ class OpikProxyLLM:
             base_url=self.base_url
         )
 
-    def generate_provider_response(self, prompt: str) -> Dict[str, Any]:
+    def generate_string(
+        self,
+        input: str,
+        response_format: Optional[Type[pydantic.BaseModel]] = None,
+        **kwargs: Any,
+    ) -> str:
         """
-        Генерация ответа через прокси (для совместимости с Opik)
+        Генерация строки через прокси (основной метод для метрик Opik)
+        """
+        messages = [{"role": "user", "content": input}]
+        response = self.generate_provider_response(messages, **kwargs)
+        return response.choices[0].message.content
 
-        Args:
-            prompt: Текст промпта
-
-        Returns:
-            Словарь с ответом в формате, ожидаемом Opik
+    def generate_provider_response(
+        self, messages: List[Dict[str, Any]], **kwargs: Any
+    ) -> Any:
+        """
+        Генерация ответа через прокси в формате OpenAI response
         """
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
                 temperature=self.temperature
             )
-
-            # Возвращаем в формате, совместимом с Opik
-            return {
-                "choices": [{
-                    "message": {
-                        "content": response.choices[0].message.content
-                    }
-                }]
-            }
+            return response
 
         except Exception as e:
             print(f"❌ Ошибка при генерации через прокси: {e}")
@@ -82,15 +85,8 @@ class OpikProxyLLM:
     def __call__(self, prompt: str) -> str:
         """
         Прямой вызов модели (для простоты использования)
-
-        Args:
-            prompt: Текст промпта
-
-        Returns:
-            Сгенерированный текст
         """
-        response = self.generate_provider_response(prompt)
-        return response["choices"][0]["message"]["content"]
+        return self.generate_string(prompt)
 
 
 def create_opik_proxy_model(
