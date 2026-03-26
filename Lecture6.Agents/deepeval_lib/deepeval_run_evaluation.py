@@ -118,7 +118,6 @@ def evaluate_agent(
         ),
         ToolCorrectnessMetric(
             threshold=threshold,
-            model=model,
             include_reason=True,
             should_exact_match=True,  # только полное совпадение
             should_consider_ordering=True  # учитываем порядок вызова тулов
@@ -163,7 +162,7 @@ if __name__ == "__main__":
     # Агент
     agent = AgentConnector(
         endpoint_url="http://5.11.83.110:8004/ask",
-        api_key="80456142-5441-4469-b97f-1d72b7802a93",
+        api_key="api-key-for-agent",
         user_id="AleksM",
         session_id="3bb76ef7-3c21-4644-9890-eb5d6a223017"
     )
@@ -171,7 +170,7 @@ if __name__ == "__main__":
     # Модель для метрик
     proxy_model = create_proxy_model(
         model="gpt-4o-mini",
-        api_key="sk-proxy-maEZp5Yp0-h9nOHDZXtoZPql5VRW3CqTqakKOQgsQtQ",
+        api_key="sk-proxy-your-key",
         base_url="http://5.11.83.110:8000"
     )
 

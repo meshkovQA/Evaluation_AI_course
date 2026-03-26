@@ -210,7 +210,7 @@ async def scenario_1():
     # Агент
     agent = AgentConnector(
         endpoint_url="http://5.11.83.110:8004/ask",
-        api_key="80456142-5441-4469-b97f-1d72b7802a93",
+        api_key="api-key-for-agent",
         user_id="AleksM",
         session_id="faecb783-d996-49ee-97a0-f13805f63a52"
     )
@@ -218,7 +218,7 @@ async def scenario_1():
     # Proxy модель
     proxy_model = create_proxy_llm(
         model="gpt-4o-mini",
-        api_key="sk-proxy-maEZp5Yp0-h9nOHDZXtoZPql5VRW3CqTqakKOQgsQtQ",
+        api_key="sk-proxy-your-key",
         base_url="http://5.11.83.110:8000"
     )
 
