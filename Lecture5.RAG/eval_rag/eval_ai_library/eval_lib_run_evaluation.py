@@ -2,14 +2,12 @@
 End-to-End RAG Evaluation Pipeline with eval_lib
 Загружает датасет из Excel, получает ответы от RAG и запускает оценку
 """
-
 import sys
-sys.path.insert(
-    0, '/Users/aleksandrmeskov/Desktop/AI evaluation/AI_practice/Lecture5/eval_rag')
+import os
 
-sys.path.insert(0, '/Users/aleksandrmeskov/Desktop/Projects/Eval-ai-library')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import asyncio  # noqa: E402
+
 import time  # noqa: E402
 import pandas as pd  # noqa: E402
 from typing import List  # noqa: E402
