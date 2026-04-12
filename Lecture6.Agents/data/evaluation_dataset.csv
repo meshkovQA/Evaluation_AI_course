@@ -1,0 +1,3 @@
+question,expected_response,expected_tools
+Найди квартиры дешевле 3000 долларов,,"extract_offers, filter_offers"
+Найди квартиры дешевле 3000 долларов и конвертируй их в рубли,,"extract_offers, normalize_offers_currency"
