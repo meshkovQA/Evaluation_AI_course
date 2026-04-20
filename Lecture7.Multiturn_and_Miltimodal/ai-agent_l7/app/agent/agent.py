@@ -45,36 +45,40 @@ def _set_session_offers(offers: List[Dict[str, Any]], session_id: Optional[str] 
     state["offers"] = offers
 
 SYSTEM = (
-    """Ты — многоцелевой агент мониторинга цен на жильё.
+    """You are a multi-purpose housing price monitoring agent.
 
-ВАЖНО: У тебя есть память о ранее извлечённых объявлениях в рамках сессии.
-Если пользователь задаёт уточняющий вопрос (например "какие из них...", "покажи ещё...", "отфильтруй...")
-и НЕ дал новый URL — используй ранее извлечённые данные, вызывая filter_offers или compute_stats БЕЗ параметра offers.
+CRITICAL LANGUAGE RULE: You MUST reply in the SAME language the user writes in.
+If the user writes in English — reply in English. If in Russian — reply in Russian.
+If in French — reply in French. Always match the user's language exactly.
 
-Правила работы:
-1) Если пользователь дал URL — извлеки объявления через extract_offers
-2) Если пользователь спрашивает про "эти квартиры", "из них", "ранее найденные" —
-   просто вызови filter_offers/compute_stats без offers, они возьмут данные из памяти
-3) Если просили фильтровать — применяй filter_offers с нужными параметрами
-4) Если просили в другой валюте — normalize_offers_currency
-5) Если нужна статистика — compute_stats
-6) Если пользователь спрашивает о расположении квартир, районах, инфраструктуре,
-   транспорте, близости к центру, безопасности района или другой информации,
-   которой нет в объявлениях — используй web_search для поиска в интернете.
+IMPORTANT: You have memory of previously extracted offers within the session.
+If the user asks a follow-up question (e.g. "which of them...", "show more...", "filter...")
+and did NOT provide a new URL — use previously extracted data by calling filter_offers or compute_stats WITHOUT the offers parameter.
 
-ВАЖНО для web_search:
-- ОБЯЗАТЕЛЬНО включай в поисковый запрос КОНТЕКСТ из текущего разговора!
-- Если пользователь спрашивает о найденных квартирах — включи в запрос:
-  * Город/страну из URL или объявлений (например "New York", "Москва")
-  * Конкретные адреса/улицы из найденных квартир
-  * Суть вопроса пользователя
-- Примеры:
-  * Квартиры в NYC, вопрос "какие ближе к центру?" → запрос: "East 53rd street New York Manhattan расстояние до центра"
-  * Квартиры в Москве, вопрос "где лучше инфраструктура?" → запрос: "улица Тверская Москва инфраструктура метро магазины"
-- НИКОГДА не делай запросы без контекста! Запрос "квартиры ближе к центру" — ПЛОХО, нет привязки к конкретным адресам
+Rules:
+1) If the user provided a URL — extract offers via extract_offers
+2) If the user asks about "these apartments", "from them", "previously found" —
+   just call filter_offers/compute_stats without offers, they will take data from memory
+3) If filtering is requested — use filter_offers with the needed parameters
+4) If a different currency is requested — normalize_offers_currency
+5) If statistics are needed — compute_stats
+6) If the user asks about apartment locations, neighborhoods, infrastructure,
+   transport, proximity to center, neighborhood safety or other information
+   not present in the offers — use web_search to search the internet.
 
-Всегда вызывай инструменты именованными аргументами строго по их JSON-схеме.
-Отвечай кратко и на том же языке, на котором написан вопрос пользователя. При необходимости показывай 3–5 примеров ссылок."""
+IMPORTANT for web_search:
+- ALWAYS include CONTEXT from the current conversation in the search query!
+- If the user asks about found apartments — include in the query:
+  * City/country from the URL or offers (e.g. "New York", "Moscow")
+  * Specific addresses/streets from the found apartments
+  * The essence of the user's question
+- Examples:
+  * Apartments in NYC, question "which are closer to the center?" → query: "East 53rd street New York Manhattan distance to center"
+  * Apartments in Moscow, question "where is better infrastructure?" → query: "Tverskaya street Moscow infrastructure metro shops"
+- NEVER make queries without context! Query "apartments closer to center" — BAD, no reference to specific addresses
+
+Always call tools with named arguments strictly following their JSON schema.
+Keep answers concise. Show 3-5 example links when relevant."""
 )
 
 
@@ -227,12 +231,13 @@ tools = [
 prompt = ChatPromptTemplate.from_messages([
     ("system", SYSTEM),
     ("human",
-     "Задача пользователя: {question}\n"
-     "Новые ссылки (может быть пусто): {urls}\n\n"
-     "КОНТЕКСТ СЕССИИ:\n{session_context}\n\n"
-     "ПОМНИ: Если ссылок нет, но пользователь спрашивает про ранее найденные квартиры — "
-     "используй filter_offers или compute_stats БЕЗ параметра offers, данные уже в памяти.\n"
-     "При использовании web_search — ОБЯЗАТЕЛЬНО учитывай контекст сессии!"),
+     "User's request: {question}\n"
+     "New URLs (may be empty): {urls}\n\n"
+     "SESSION CONTEXT:\n{session_context}\n\n"
+     "REMEMBER: If no URLs are given but the user asks about previously found apartments — "
+     "use filter_offers or compute_stats WITHOUT the offers parameter, the data is already in memory.\n"
+     "When using web_search — ALWAYS take session context into account!\n"
+     "IMPORTANT: Reply in the same language the user used in their request above."),
     MessagesPlaceholder("agent_scratchpad"),
 ])
 
@@ -254,21 +259,21 @@ def _build_session_context(session_id: Optional[str]) -> str:
     offers = state.get("offers", [])
 
     if not offers:
-        return "Пока нет данных"
+        return "No data yet"
 
     # Формируем краткую сводку по найденным квартирам
     context_parts = []
-    context_parts.append(f"Найдено {len(offers)} объявлений")
+    context_parts.append(f"Found {len(offers)} offers")
 
     # Извлекаем адреса/заголовки (первые 5 для примера)
     titles = [o.get("title", "") for o in offers[:5]]
     if titles:
-        context_parts.append(f"Примеры адресов: {', '.join(titles)}")
+        context_parts.append(f"Example addresses: {', '.join(titles)}")
 
     # Извлекаем город из URL если есть
     urls_in_offers = [o.get("url", "") for o in offers[:1]]
     if urls_in_offers and urls_in_offers[0]:
-        context_parts.append(f"Источник: {urls_in_offers[0]}")
+        context_parts.append(f"Source: {urls_in_offers[0]}")
 
     return "\n".join(context_parts)
 
