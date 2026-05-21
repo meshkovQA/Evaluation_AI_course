@@ -3,3 +3,4 @@ __pycache__/
 .DS_Store
 .deepeval/
 .eval_cache/
+.claude
