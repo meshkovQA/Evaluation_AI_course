@@ -1,5 +1,5 @@
-# from ai_proxy_client import google_chat_v3
-from ai_client import google_chat_v3
+from ai_proxy_client import google_chat_v3
+# from ai_client import google_chat_v3
 
 """
 В случае использования proxy, мы полностью удаляем импорт обычного ai_client или комментируем его.
@@ -21,7 +21,7 @@ def basic_llm_judge(question, answer):
 """
 
     response = google_chat_v3(
-        prompt, model="gemini-2.0-flash", temperature=0.1)
+        prompt, model="gemini-2.5-flash", temperature=0.1)
     return response
 
 

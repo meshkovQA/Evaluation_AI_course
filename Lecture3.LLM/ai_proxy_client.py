@@ -8,14 +8,14 @@ import httpx
 client = OpenAI(
     # Личный ключ от прокси
     api_key=os.getenv(
-        "PROXY_API_KEY", "sk-proxy-"),
+        "PROXY_API_KEY", "sk-google-proxy-"),
     # прокси сервер
     base_url=os.getenv("PROXY_BASE_URL", "http://5.11.83.110:8000")
 )
 
 # ============= Google через прокси =============
 GOOGLE_PROXY_API_KEY = os.getenv(
-    "GOOGLE_PROXY_API_KEY", "sk-google-proxy-")
+    "GOOGLE_PROXY_API_KEY", "sk-google-proxy")
 GOOGLE_PROXY_BASE_URL = os.getenv(
     "GOOGLE_PROXY_BASE_URL", "http://5.11.83.110:8001")
 
@@ -55,7 +55,7 @@ def openai_chat_v3(prompt: str, model: str, temperature: float = 0.1) -> str:
 
 
 def google_chat(prompt: str) -> str:
-    url = f"{GOOGLE_PROXY_BASE_URL}/models/gemini-2.0-flash-lite:generateContent"
+    url = f"{GOOGLE_PROXY_BASE_URL}/models/gemini-2.5-flash:generateContent"
 
     headers = {
         "Authorization": f"Bearer {GOOGLE_PROXY_API_KEY}",
@@ -81,7 +81,7 @@ def google_chat(prompt: str) -> str:
 
 
 def google_chat_v2(prompt: str) -> str:
-    url = f"{GOOGLE_PROXY_BASE_URL}/models/gemini-2.0-flash-lite:generateContent"
+    url = f"{GOOGLE_PROXY_BASE_URL}/models/gemini-2.5-flash:generateContent"
 
     headers = {
         "Authorization": f"Bearer {GOOGLE_PROXY_API_KEY}",
