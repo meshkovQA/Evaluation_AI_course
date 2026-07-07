@@ -4,3 +4,5 @@ __pycache__/
 .deepeval/
 .eval_cache/
 .claude
+Lecture4.RAG/myenv
+Lecture4.RAG/.env.local

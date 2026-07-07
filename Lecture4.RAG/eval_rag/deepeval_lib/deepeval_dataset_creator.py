@@ -11,11 +11,9 @@ current_dir = Path(__file__).resolve().parent  # .../deepeval_lib
 eval_rag_dir = current_dir.parent  # .../eval_rag
 sys.path.insert(0, str(eval_rag_dir))
 
-from deepeval.dataset import Golden  # noqa: E402
-import time  # noqa: E402
+from deepeval.dataset import EvaluationDataset, Golden  # noqa: E402
 from rag_connector import RAGConnector  # noqa: E402
 from dataset_parser import DatasetParser  # noqa: E402
-from deepeval.dataset import Golden, EvaluationDataset  # noqa: E402
 
 
 def create_deepeval_dataset_from_excel(
@@ -71,13 +69,14 @@ def create_deepeval_dataset_from_excel(
         print(f"      ✅ Ответ: {actual_output[:60]}...")
         print(f"      📚 Контекстов: {len(retrieval_context)}")
 
-        # Создаем Golden объект
+        # В deepeval 4.x Golden поддерживает actual_output и retrieval_context —
+        # можно сохранить ответ RAG и его контексты прямо в датасете.
         golden = Golden(
             input=question,
             actual_output=actual_output,
             expected_output=expected_responses[i-1] if i -
             1 < len(expected_responses) else "",
-            retrieval_context=retrieval_context
+            retrieval_context=retrieval_context,
         )
 
         goldens.append(golden)
@@ -89,13 +88,9 @@ def create_deepeval_dataset_from_excel(
     print(f"\n💾 Шаг 4: Сохранение датасета в DeepEval...")
 
     try:
-        # Вариант 1: Через EvaluationDataset
-        from deepeval.dataset import EvaluationDataset
-
-        # Создаем датасет
-        evaluation_dataset = EvaluationDataset(goldens)
-
-        # Сохраняем с алиасом
+        # deepeval 4.x: EvaluationDataset принимает только goldens=,
+        # а push() больше не имеет auto_convert_test_cases_to_goldens.
+        evaluation_dataset = EvaluationDataset(goldens=goldens)
         evaluation_dataset.push(alias=dataset_alias)
 
         print(f"✅ Датасет '{dataset_alias}' успешно создан в DeepEval!")
@@ -117,12 +112,12 @@ if __name__ == "__main__":
     # 1. Инициализируем RAG коннектор
     rag_connector = RAGConnector(
         endpoint_url="http://5.11.83.110:8002/api/v1/chat/",
-        api_key="rag-api-key",
+        api_key="YOUR_API_KEY",  # ← Ваш API ключ
         timeout=30
     )
 
     # 2. Указываем путь к Excel файлу
-    excel_path = "data/evaluation_dataset.xlsx"  # ← Ваш путь
+    excel_path = "eval_rag/data/evaluation_dataset.xlsx"  # ← Ваш путь
 
     # 3. Алиас для датасета в DeepEval UI
     dataset_alias = "Second dataset"  # ← Название в UI
